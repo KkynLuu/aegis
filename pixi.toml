@@ -1,0 +1,51 @@
+[workspace]
+name = "aegis"
+version = "1.0.0"
+description = "AEGIS: Non-Hermitian Quantum Walk Graph Neural Networks with Topological Point-Gap Invariants (IEEE TIFS)"
+authors = ["Cho Xuan Do <chodx@ptit.edu.vn>"]
+channels = ["conda-forge"]
+platforms = ["osx-arm64"]
+
+[dependencies]
+python = "3.11.*"
+pytorch = ">=2.2.0"
+numpy = ">=1.26,<3.0"
+scipy = ">=1.11.0"
+pandas = ">=2.0.0"
+networkx = "*"
+matplotlib = ">=3.11.2,<4"
+seaborn = "*"
+tqdm = "*"
+scikit-learn = "*"
+qiskit = ">=2.6.1,<3"
+qiskit-aer = ">=0.18.0,<0.19"
+qiskit-ibm-runtime = ">=0.51.0,<0.52"
+pylatexenc = ">=2.11,<3"
+
+[pypi-dependencies]
+torch-geometric = "*"
+qiskit = ">=1.0.0"
+qiskit-aer = "*"
+qiskit-ibm-runtime = "*"
+
+[tasks]
+test-conv = "python tests/test_quasar_conv.py"
+test-expressivity = "python scripts/demo_expressivity.py"
+benchmark-csl = "python benchmarks/benchmark_csl.py"
+benchmark-srg = "python benchmarks/benchmark_srg.py"
+preprocess-smoke = "python scripts/preprocess_rq1.py --smoke_test"
+preprocess-all = "python scripts/preprocess_rq1.py --dataset all"
+preprocess-ctu9 = "python scripts/preprocess_rq1.py --dataset ctu13_9"
+preprocess-ctu11 = "python scripts/preprocess_rq1.py --dataset ctu13_11"
+preprocess-ctu-all = "python scripts/preprocess_rq1.py --dataset ctu13_all"
+rq1-nf-smoke = "python benchmarks/benchmark_rq1_detection.py --dataset nf_bot_iot --smoke_test"
+rq1-ctu-smoke = "python benchmarks/benchmark_rq1_detection.py --dataset ctu13_10 --smoke_test"
+rq1-ctu9-smoke = "python benchmarks/benchmark_rq1_detection.py --dataset ctu13_9 --smoke_test"
+rq1-ctu11-smoke = "python benchmarks/benchmark_rq1_detection.py --dataset ctu13_11 --smoke_test"
+rq1-nf = "python benchmarks/benchmark_rq1_detection.py --dataset nf_bot_iot --num_seeds 10 --epochs 35"
+rq1-ctu = "python benchmarks/benchmark_rq1_detection.py --dataset ctu13_10 --num_seeds 10 --epochs 35"
+rq1-ctu9 = "python benchmarks/benchmark_rq1_detection.py --dataset ctu13_9 --num_seeds 10 --epochs 35"
+rq1-ctu11 = "python benchmarks/benchmark_rq1_detection.py --dataset ctu13_11 --num_seeds 10 --epochs 35"
+rq1-ctu-all = "python benchmarks/benchmark_rq1_detection.py --dataset ctu13_all --num_seeds 10 --epochs 35"
+rq3-cross-10-to-11 = "python benchmarks/benchmark_rq1_detection.py --dataset ctu13_10 --test_dataset ctu13_11 --num_seeds 10 --epochs 35 --output_json benchmarks/rq3_cross_10_to_11_results.json"
+rq3-cross-10-to-9 = "python benchmarks/benchmark_rq1_detection.py --dataset ctu13_10 --test_dataset ctu13_9 --num_seeds 10 --epochs 35 --output_json benchmarks/rq3_cross_10_to_9_results.json"

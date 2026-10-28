@@ -1,0 +1,52 @@
+{
+  "GCN": {
+    "f1_mean": 2.173913043478261,
+    "f1_std": 0.0,
+    "recall_mean": 100.0,
+    "recall_std": 0.0,
+    "far_mean": 100.0,
+    "far_std": 0.0,
+    "auc_mean": 13.636363636363635,
+    "auc_std": 0.0
+  },
+  "GIN": {
+    "f1_mean": 41.55844155844156,
+    "f1_std": 0.0,
+    "recall_mean": 0.0,
+    "recall_std": 0.0,
+    "far_mean": 27.27272727272727,
+    "far_std": 0.0,
+    "auc_mean": 22.727272727272727,
+    "auc_std": 0.0
+  },
+  "RWPE-GIN": {
+    "f1_mean": 46.42857142857142,
+    "f1_std": 0.0,
+    "recall_mean": 0.0,
+    "recall_std": 0.0,
+    "far_mean": 11.363636363636363,
+    "far_std": 0.0,
+    "auc_mean": 43.18181818181818,
+    "auc_std": 0.0
+  },
+  "MagNet": {
+    "f1_mean": 18.181818181818183,
+    "f1_std": 0.0,
+    "recall_mean": 0.0,
+    "recall_std": 0.0,
+    "far_mean": 77.27272727272727,
+    "far_std": 0.0,
+    "auc_mean": 9.090909090909092,
+    "auc_std": 0.0
+  },
+  "QUASAR": {
+    "f1_mean": 32.6036866359447,
+    "f1_std": 0.0,
+    "recall_mean": 100.0,
+    "recall_std": 0.0,
+    "far_mean": 59.09090909090909,
+    "far_std": 0.0,
+    "auc_mean": 70.45454545454545,
+    "auc_std": 0.0
+  }
+}

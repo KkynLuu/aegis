@@ -1,0 +1,51 @@
+# Secrets & API Tokens
+*token*
+.env*
+ibm_token.txt
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment & Virtual Environments
+.pixi/
+.venv/
+env/
+venv/
+
+# Large Datasets & Tensors (reproducible via scripts)
+data/CTU-13/
+data/NF-BoT-IoT/
+data/processed/
+data/TUDataset/
+*.pt
+*.pth
+*.ckpt
+*.h5
+*.bin
+*.safetensors
+
+# Local Checkpoints, Scratch & Logs
+benchmarks/*checkpoint*.json
+benchmarks/*.pt
+scratch/
+*.log
+wandb/
+
+# LaTeX build residues
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/*.synctex.gz
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.bbl
+paper/*.blg
+
+# macOS & Editor
+.DS_Store
+._*
+.idea/
+.vscode/

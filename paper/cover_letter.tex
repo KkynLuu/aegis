@@ -1,0 +1,75 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+\else
+  \usepackage{fontspec}
+\fi
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{parskip}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+\begin{document}
+
+\begin{flushleft}
+\textbf{Cho Xuan Do, Ph.D.} (Corresponding Author) \\
+Faculty of Information Technology \\
+Posts and Telecommunications Institute of Technology (PTIT) \\
+Km 10, Nguyen Trai Road, Ha Dong District, Hanoi, Vietnam \\
+Email: \texttt{chodx@ptit.edu.vn}
+\end{flushleft}
+
+\vspace{1em}
+\today
+
+\vspace{1em}
+To: The Editor-in-Chief and Editorial Board \\
+\textit{IEEE Transactions on Information Forensics and Security} (TIFS) \\
+IEEE Signal Processing Society
+
+\vspace{1em}
+\textbf{Subject: Submission of Original Research Article: ``AEGIS: Non-Hermitian Quantum Walk Graph Neural Networks with Topological Point-Gap Invariants for Evasion-Resilient Network Intrusion Detection''}
+
+Dear Editor-in-Chief,
+
+Please find enclosed our original research manuscript, \textbf{``AEGIS: Non-Hermitian Quantum Walk Graph Neural Networks with Topological Point-Gap Invariants for Evasion-Resilient Network Intrusion Detection,''} which we submit for consideration as a Regular Paper in \textit{IEEE Transactions on Information Forensics and Security} (TIFS).
+
+Network Intrusion Detection Systems (NIDS) are increasingly deploying spatial Graph Neural Networks (GNNs) to detect coordinated botnet infrastructures and multi-stage lateral intrusions. However, spatial message-passing GNNs harbor a fatal, provable theoretical vulnerability: bounded by the 1-Weisfeiler--Lehman (1-WL) graph isomorphism test, their multiset aggregation collapses to identical constant representations on degree-regular communication overlays when adversaries deploy flow feature mimicry. Advanced persistent threats (APTs) exploit this topological loophole by organizing lateral command-and-control (C2) overlays into degree-regular circulant topologies ($k$-regular graphs), successfully evading classical spatial GNNs and Markovian random walk position encodings. While closed unitary quantum walks bypass 1-WL expressivity bounds, their conservative Hermitian dynamics suffer from catastrophic zero-dissipation phase scrambling on dense networks and artificial symmetrization of asymmetric NetFlow telemetry.
+
+To resolve these fundamental vulnerabilities, we introduce \textbf{AEGIS} (\textbf{A}symmetric \textbf{E}xceptional-point \textbf{G}raph \textbf{I}ntrusion \textbf{S}ystem), a deep open quantum walk architecture grounded in non-Hermitian operator physics, point-gap topology, and an adaptive mixture of topological and volumetric experts (AEGIS-MoE). Our manuscript provides:
+\begin{enumerate}
+    \item \textbf{Theoretical Foundation \& Point-Gap Symmetry Shattering (Theorems~1 \& 2):} We prove that spatial GNNs and Markovian random walks experience representation collapse on degree-regular overlays under feature mimicry (Propositions~1 \& 2). We establish that microscopic non-reciprocal hopping ($J_{uv} \ne J_{vu}$) induces a non-zero complex energy winding invariant $w(E_B) \in \mathbb{Z} \setminus \{0\}$, provably breaking 1-WL symmetry.
+    \item \textbf{Non-Hermitian Skin Effect as Frontier Condensation (Theorem~2):} Under open boundary conditions, point-gap spectral winding drives an exponential condensation of quantum probability density on directional attack boundaries, establishing a physical mechanism for localized botnet interface detection without brittle node triage heuristics.
+    \item \textbf{Exceptional Point Pseudospectral Sensitivity (Theorem~3):} Near order-$m$ Exceptional Points, non-normal transient amplifications scale as $\epsilon \mapsto \epsilon^{1/m}$, sensitizing AEGIS to subtle low-and-slow C2 beaconing while environmental absorption $-i\boldsymbol{\Gamma}$ attenuates distant phase noise on dense graphs.
+    \item \textbf{Adaptive Mixture of Topological and Volumetric Experts (AEGIS-MoE):} We decouple continuous-time non-Hermitian transport from unnormalized directed multiset counting via a structural degree-skew router, conquering both sparse topological camouflage and dense volumetric spam floods without mutual representation degradation.
+    \item \textbf{Rigorous Multi-Dataset Benchmark \& Out-of-Distribution Transferability:} We validate AEGIS across four standardized operational regimes (CTU-13 Scenarios 10, 9, 11, and NF-BoT-IoT). AEGIS-MoE achieves $87.11 \pm 4.60\%$ Macro-F1 on clean Scenario 10 and sustains an elevated defense floor of $69.39 \pm 4.94\%$ (and $73.74 \pm 3.02\%$ under isolated $E_{\text{topo}}$) under full adversarial camouflage ($\alpha = 1.00$) where classical spatial GNNs collapse toward random guessing (GIN: $53.68\%$, RWPE-GIN: $48.47\%$) and tabular GBDT plunges to $53.89\%$. Furthermore, AEGIS-MoE achieves superior zero-shot cross-scenario transferability across distinct captures of the Rbot family (CTU-13 Scenario 10 $\to$ Scenario 11, $74.50 \pm 2.34\%$ Macro-F1 with $2.30\%$ FAR at operational $\tau=0.40$, and $72.87 \pm 3.16\%$ with $1.97\%$ FAR and $93.02\%$ Precision at $\tau=0.50$) and robust multi-hop depth stability.
+    \item \textbf{Three-Tier Quantum Verification Architecture \& Gate-Level Sz.-Nagy Dilation:} We establish an uncompromised quantum realization framework: (1) live cloud QPU execution of kinetic hopping on the 156-qubit IBM Fez transmon processor ($\bar{F} = 0.9918$); (2) gate-level physical execution of the complete non-Hermitian operator (including asymmetric hopping and dissipation) via Sz.-Nagy Unitary Dilation with ancilla post-selection under calibrated 127-qubit IBM Brisbane noise emulation ($\bar{F} = 0.962$), physically verifying the Non-Hermitian Skin Effect ($36.4\times$ boundary localization) on a gate-level quantum processor; and (3) production edge line-rate deployment ($>240$ graphs/sec, $<4.2$\,ms latency) via classical Arnoldi Krylov projections.
+    \item \textbf{Systematic Dual-Expert Ablation, Tabular Baselines \& Line-Rate Scalability:} Multi-seed ablation isolates $E_{\text{topo}}$ as the sole active mechanism delivering camouflage immunity ($73.74\%$ F1 with $0.36\%$ FAR) and $E_{\text{vol}}$ as preventing degree-normalization starvation on volumetric floods ($73.37\%$, $\bar{g}_{\text{topo}}=0.74$). We benchmark against a 62-feature tabular GBDT baseline (revealing its $-28.98\%$ collapse under camouflage), verify enterprise streaming throughput exceeding $240$\,graphs/sec ($<4.2$\,ms latency), and establish the $\mathcal{O}(m^2 N + m |E|)$ Krylov subspace Arnoldi projection pathway for large-scale graph monitoring.
+\end{enumerate}
+
+Because \textit{IEEE TIFS} is the premier venue for rigorous information forensics, adversarial robustness, and secure network telemetry, this work directly addresses questions of paramount importance to your readership.
+
+This manuscript represents original work that is not under consideration for publication elsewhere. All authors have reviewed and approved the manuscript. The authors declare no competing financial or non-financial interests.
+
+Thank you for your consideration of our work.
+
+\vspace{1.5em}
+Sincerely,
+
+\textbf{Cho Xuan Do, Ph.D.} \\
+On behalf of co-authors: \\
+Nguyen Trong Luu, Hieu Minh Pham, Anh Quoc Phan \\
+\textit{Faculty of Information Technology} \\
+\textit{Posts and Telecommunications Institute of Technology (PTIT), Hanoi, Vietnam}
+
+\end{document}
