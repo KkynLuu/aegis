@@ -62,6 +62,74 @@ class DirectedMultisetVolumetricBlock(nn.Module):
         return out
 
 
+class StandaloneVolumetricClassifier(nn.Module):
+    """
+    Standalone Directed Multiset Volumetric Aggregator Classifier.
+    Used for rigorous ablation of the classical volumetric multiset modality (E_vol alone).
+    Computes directed jumping-knowledge unnormalized multiset accumulations and graph-level readout.
+    """
+    def __init__(
+        self,
+        in_dim: int = 10,
+        hidden_dim: int = 32,
+        num_classes: int = 2,
+        num_layers: int = 2,
+        dropout: float = 0.1,
+    ):
+        super().__init__()
+        self.in_dim = in_dim
+        self.hidden_dim = hidden_dim
+        self.num_classes = num_classes
+        self.num_layers = num_layers
+        self.dropout = dropout
+
+        self.vol_blocks = nn.ModuleList([
+            DirectedMultisetVolumetricBlock(in_dim if i == 0 else hidden_dim, hidden_dim)
+            for i in range(num_layers)
+        ])
+        self.vol_dim = num_layers * hidden_dim
+
+        self.head_vol = nn.Sequential(
+            nn.Linear(self.vol_dim, hidden_dim * 2),
+            nn.LayerNorm(hidden_dim * 2),
+            nn.SiLU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_dim * 2, hidden_dim),
+            nn.SiLU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_dim, num_classes),
+        )
+
+    def forward(
+        self,
+        x: torch.Tensor,
+        adj: torch.Tensor,
+        mask: Optional[torch.Tensor] = None,
+    ) -> torch.Tensor:
+        B, N, _ = x.shape
+        if mask is not None:
+            mask_float = mask.float().unsqueeze(-1)
+        else:
+            mask_float = None
+
+        v = x
+        if mask_float is not None:
+            v = v * mask_float
+
+        vol_readouts = []
+        for block in self.vol_blocks:
+            v = block(v, adj, mask=mask)
+            if mask_float is not None:
+                v_sum = (v * mask_float).sum(dim=1)
+            else:
+                v_sum = v.sum(dim=1)
+            vol_readouts.append(v_sum)
+
+        graph_vol = torch.cat(vol_readouts, dim=-1)
+        logits_vol = self.head_vol(graph_vol)
+        return logits_vol
+
+
 class AegisClassifier(nn.Module):
     """
     Graph-level Intrusion Detection Classifier powered by Open Non-Hermitian
@@ -485,6 +553,11 @@ class AegisClassifier(nn.Module):
                     g_topo = 1.0 - g_vol  # [B, 1] in [0.25, 1.00]
 
                     logits = g_topo * logits_topo + g_vol * logits_vol
+                    gating_weights = torch.cat([g_topo, g_vol], dim=-1)
+                elif self.moe_routing_mode == "uniform":
+                    g_topo = torch.full((B, 1), 0.5, device=x.device)
+                    g_vol = torch.full((B, 1), 0.5, device=x.device)
+                    logits = 0.5 * logits_topo + 0.5 * logits_vol
                     gating_weights = torch.cat([g_topo, g_vol], dim=-1)
                 else:
                     gating_weights = F.softmax(router_logits, dim=-1)  # [B, 2]: [g_topo, g_vol]

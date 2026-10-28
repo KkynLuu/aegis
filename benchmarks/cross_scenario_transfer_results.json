@@ -24,8 +24,8 @@
     "epochs": 35,
     "batch_size": 32,
     "lr": 0.003,
-    "total_runtime_sec": 2084.7929401397705,
-    "timestamp": "2026-10-28 17:26:07"
+    "total_runtime_sec": 2066.962609052658,
+    "timestamp": "2026-10-29 01:26:41"
   },
   "summary": {
     "GCN": {

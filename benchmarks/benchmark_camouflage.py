@@ -245,35 +245,20 @@ def apply_topological_camouflage(
             if k_eff % 2 == 1 and M % 2 == 1:
                 k_eff = k_eff - 1
 
-            # Determine desired circulant overlay edges
-            eff_M = min(M, orig_E)
-            eff_bots = bot_indices[:eff_M]
-
-            # Build deduplicated undirected chordal edges
-            desired_pairs = set()
-            for offset in range(1, max(1, k_eff // 2) + 1):
-                for i in range(eff_M):
-                    u_node = eff_bots[i]
-                    v_node = eff_bots[(i + offset) % eff_M]
-                    desired_pairs.add((min(u_node, v_node), max(u_node, v_node)))
-            if k_eff % 2 == 1:
-                for i in range(eff_M // 2):
-                    u_node = eff_bots[i]
-                    v_node = eff_bots[(i + eff_M // 2) % eff_M]
-                    desired_pairs.add((min(u_node, v_node), max(u_node, v_node)))
-
-            # Convert to directed edges based on available edge budget
             desired_directed = []
-            if orig_E >= 2 * len(desired_pairs):
-                for u_node, v_node in desired_pairs:
-                    desired_directed.append((u_node, v_node))
-                    desired_directed.append((v_node, u_node))
-            else:
-                for i in range(eff_M):
-                    desired_directed.append((eff_bots[i], eff_bots[(i + 1) % eff_M]))
-                desired_directed = desired_directed[:min(len(desired_directed), orig_E)]
+            for i in range(M):
+                desired_directed.append((bot_indices[i], bot_indices[(i + 1) % M]))
+            if k_eff >= 4:
+                for i in range(M):
+                    desired_directed.append((bot_indices[(i + 1) % M], bot_indices[i]))
+            if k_eff >= 3:
+                for i in range(M // 2):
+                    desired_directed.append((bot_indices[i], bot_indices[(i + M // 2) % M]))
+                    desired_directed.append((bot_indices[(i + M // 2) % M], bot_indices[i]))
 
-            cycle_set = set(desired_directed)
+            seen = set()
+            unique_directed = [e for e in desired_directed if not (e in seen or seen.add(e))]
+            cycle_set = set(unique_directed)
 
             # Step 2A: Remove non-desired internal lateral links between bots
             for i in range(M):
@@ -282,63 +267,107 @@ def apply_topological_camouflage(
                         adj_cam[bot_indices[i], bot_indices[j]] = 0.0
 
             # Step 2B: Establish desired regular overlay edges
-            for u_node, v_node in desired_directed:
+            for u_node, v_node in unique_directed:
                 adj_cam[u_node, v_node] = 1.0
 
             # Step 2C: Match external connection degrees to preserve Delta deg(v) == 0
-            for u_node in bot_indices:
-                target_ext = max(0, orig_conn_degs[u_node] - k_eff)
-                cur_ext = [
-                    j for j in benign_nodes
-                    if adj_cam[u_node, j] > 0 or adj_cam[j, u_node] > 0
-                ]
-                if len(cur_ext) > target_ext:
-                    for j in cur_ext[:len(cur_ext) - target_ext]:
-                        adj_cam[u_node, j] = 0.0
-                        adj_cam[j, u_node] = 0.0
-                elif len(cur_ext) < target_ext:
-                    to_add = target_ext - len(cur_ext)
-                    added = 0
-                    for j in benign_nodes:
-                        if adj_cam[u_node, j] == 0 and adj_cam[j, u_node] == 0:
-                            adj_cam[u_node, j] = 1.0
-                            added += 1
-                            if added >= to_add:
-                                break
+            if len(benign_nodes) > 0:
+                for u_node in bot_indices:
+                    orig_conn_deg = orig_conn_degs[u_node]
+                    target_ext = max(0, orig_conn_deg - k_eff)
+                    cur_ext = [j for j in benign_nodes if adj_cam[u_node, j] > 0 or adj_cam[j, u_node] > 0]
+                    if len(cur_ext) > target_ext:
+                        for j in cur_ext[:len(cur_ext) - target_ext]:
+                            adj_cam[u_node, j] = 0.0
+                            adj_cam[j, u_node] = 0.0
+                    elif len(cur_ext) < target_ext:
+                        to_add = target_ext - len(cur_ext)
+                        added = 0
+                        for j in benign_nodes:
+                            if adj_cam[u_node, j] == 0 and adj_cam[j, u_node] == 0:
+                                adj_cam[u_node, j] = 1.0
+                                added += 1
+                                if added >= to_add:
+                                    break
 
             # Step 2D: Strict Global Edge Conservation (Delta E == 0)
-            # Edge budget is conserved strictly across bot-external interfaces (bot <-> benign),
-            # guaranteeing that legitimate benign-to-benign sessions remain 100% untouched.
+            # Conserves edge budget across bot interfaces while preserving neighbor degrees via bidirectionality
             cur_E = int(adj_cam.sum().item())
             diff = cur_E - orig_E
 
-            if diff > 0:
-                pruned = 0
-                for u in bot_indices:
-                    if pruned >= diff:
-                        break
-                    for b in benign_nodes:
-                        if adj_cam[u, b] > 0:
-                            adj_cam[u, b] = 0.0
-                            pruned += 1
-                            if pruned >= diff:
-                                break
-                        if pruned < diff and adj_cam[b, u] > 0:
-                            adj_cam[b, u] = 0.0
-                            pruned += 1
-                            if pruned >= diff:
-                                break
-            elif diff < 0:
+            if diff < 0:
+                needed = -diff
                 added = 0
-                for u in bot_indices:
-                    if added >= -diff:
-                        break
-                    for b in benign_nodes:
-                        if adj_cam[u, b] == 0:
-                            adj_cam[u, b] = 1.0
-                            added += 1
-                            if added >= -diff:
-                                break
+                # First: make existing one-way external edges bidirectional (preserves neighbor degree)
+                if len(benign_nodes) > 0:
+                    for u in bot_indices:
+                        if added >= needed: break
+                        for b in benign_nodes:
+                            if adj_cam[u, b] > 0 and adj_cam[b, u] == 0:
+                                adj_cam[b, u] = 1.0
+                                added += 1
+                                if added >= needed: break
+                            elif adj_cam[b, u] > 0 and adj_cam[u, b] == 0:
+                                adj_cam[u, b] = 1.0
+                                added += 1
+                                if added >= needed: break
+
+                # Second: add new external edges if still needed
+                if added < needed and len(benign_nodes) > 0:
+                    for u in bot_indices:
+                        if added >= needed: break
+                        for b in benign_nodes:
+                            if adj_cam[u, b] == 0 and adj_cam[b, u] == 0:
+                                adj_cam[u, b] = 1.0
+                                added += 1
+                                if added >= needed: break
+
+                # Third: add internal chordal edges if no benign nodes available
+                if added < needed:
+                    for u in bot_indices:
+                        if added >= needed: break
+                        for v in bot_indices:
+                            if u != v and adj_cam[u, v] == 0:
+                                adj_cam[u, v] = 1.0
+                                added += 1
+                                if added >= needed: break
+
+            elif diff > 0:
+                needed = diff
+                pruned = 0
+                # First: make existing bidirectional external edges one-way (preserves neighbor degree)
+                if len(benign_nodes) > 0:
+                    for u in bot_indices:
+                        if pruned >= needed: break
+                        for b in benign_nodes:
+                            if adj_cam[u, b] > 0 and adj_cam[b, u] > 0:
+                                adj_cam[b, u] = 0.0
+                                pruned += 1
+                                if pruned >= needed: break
+
+                # Second: prune external edges if still needed
+                if pruned < needed and len(benign_nodes) > 0:
+                    for u in bot_indices:
+                        if pruned >= needed: break
+                        for b in benign_nodes:
+                            if adj_cam[u, b] > 0:
+                                adj_cam[u, b] = 0.0
+                                pruned += 1
+                                if pruned >= needed: break
+                            elif adj_cam[b, u] > 0:
+                                adj_cam[b, u] = 0.0
+                                pruned += 1
+                                if pruned >= needed: break
+
+                # Third: prune internal links if still needed
+                if pruned < needed:
+                    for u in bot_indices:
+                        if pruned >= needed: break
+                        for v in bot_indices:
+                            if u != v and adj_cam[u, v] > 0:
+                                adj_cam[u, v] = 0.0
+                                pruned += 1
+                                if pruned >= needed: break
 
             # Rigorous Mathematical Invariance Assertion
             final_E = int(adj_cam.sum().item())
@@ -487,6 +516,9 @@ def perform_camouflage_statistical_tests(
                 continue
             q_scores = np.array(results_raw[actual_target][a_str]["f1"])
             b_scores = np.array(results_raw[m][a_str]["f1"])
+            n = min(len(q_scores), len(b_scores))
+            q_scores = q_scores[:n]
+            b_scores = b_scores[:n]
             diff = q_scores - b_scores
             if np.all(diff == 0.0):
                 p_val, stat = 1.0, 0.0

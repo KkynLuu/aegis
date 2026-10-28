@@ -45,8 +45,8 @@ DATASETS = [
 ]
 
 MODEL_STYLES = {
-    "AEGIS":    {"color": "#AA3377", "marker": "P", "linewidth": 2.4, "markersize": 7, "zorder": 6, "label": "AEGIS (Ours)"},
-    "QUASAR":   {"color": "#004488", "marker": "D", "linewidth": 2.0, "markersize": 6, "zorder": 5, "label": "QUASAR (Closed CTQW)"},
+    "AEGIS":    {"color": "#AA3377", "marker": "P", "linewidth": 2.4, "markersize": 7, "zorder": 6, "label": "AEGIS-MoE (Ours)"},
+    "QUASAR":   {"color": "#004488", "marker": "D", "linewidth": 2.0, "markersize": 6, "zorder": 5, "label": "Unitary CTQW (Closed)"},
     "MagNet":   {"color": "#33BBEE", "marker": "s", "linewidth": 1.6, "markersize": 5, "zorder": 4, "label": "MagNet"},
     "GCN":      {"color": "#009988", "marker": "^", "linewidth": 1.6, "markersize": 5, "zorder": 3, "label": "GCN"},
     "GIN":      {"color": "#EE7733", "marker": "o", "linewidth": 1.6, "markersize": 5, "zorder": 2, "label": "GIN"},
@@ -124,7 +124,7 @@ def plot_multidataset_camouflage(
 
     # Unified Legend at the top
     handles, labels = axes[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="upper center", ncol=5, fontsize=11, frameon=True, framealpha=0.95, edgecolor="#cccccc", bbox_to_anchor=(0.5, 0.99))
+    fig.legend(handles, labels, loc="upper center", ncol=6, fontsize=10.5, frameon=True, framealpha=0.95, edgecolor="#cccccc", bbox_to_anchor=(0.5, 0.99))
 
     plt.tight_layout(rect=[0, 0, 1, 0.94])
     os.makedirs(os.path.dirname(os.path.abspath(output_png)), exist_ok=True)
